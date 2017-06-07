@@ -1,0 +1,36 @@
+{
+  "name": "feature-flag",
+  "version": "1.0.0",
+  "description": "This app will create an app like split.io but the simple one",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": [
+    {
+      "type": "git",
+      "url": ""
+    }
+  ],
+  "author": "Marprin Hennes Muchri(marprin93@gmail.com)",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.4.1",
+    "body-parser": "^1.17.2",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.3",
+    "dotenv": "^4.0.0",
+    "ejs": "^2.5.6",
+    "express": "^4.15.3",
+    "fs": "0.0.1-security",
+    "helmet": "^3.6.1",
+    "limiter": "^1.1.0",
+    "method-override": "^2.3.9",
+    "moment": "^2.18.1",
+    "morgan": "^1.8.2",
+    "path": "^0.12.7",
+    "pg": "^6.2.3",
+    "redis": "^2.7.1",
+    "request": "^2.81.0"
+  }
+}
