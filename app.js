@@ -1,4 +1,4 @@
-'use stric';
+'use strict';
 
 console.time('Initialize Library');
 	const async = require('async');
@@ -19,6 +19,7 @@ console.time('Initialize Library');
 	const request = require('request');
 
 	const app = express();
+	const router = express.Router();
 	require('dotenv').load();
 console.timeEnd('Initialize Library');
 
@@ -55,7 +56,7 @@ console.time('Initialize Redis');
 	const redisClient = redis.createClient(redisOptions);
 
 	redisClient.on('error', (err) => {
-		console.error('error on connecting to redis');
+		console.error('ERROR ON CONNECTING TO REDIS');
 	});
 console.timeEnd('Initialize Redis');
 
@@ -68,27 +69,28 @@ console.timeEnd('Initialize Database');
 // };
 
 let params = {};
-requireFile = (path) => {
-	fs.readdir(path, (err, filenames) => {
-		if(err){
-			console.error(err);
-			return;
-		}
+let requireFile = (path, type) => {
 
-		for(let file of filenames){
-			let currentLoop = `${path}/${file}`;
-			checkFile = fs.lstatSync(currentLoop);
+	let directoryFiles = fs.readdirSync(path);
+	for(let file of directoryFiles){
+		let currentLoop = `${path}/${file}`;
+		let checkFile = fs.lstatSync(currentLoop);
 
-			if(checkFile.isFile()){
-				params[file] = require(currentLoop);
-				console.log('in file', require(currentLoop));
-			}else if(checkFile.isDirectory()){
-				requireFile(currentLoop);
-				console.log('in directory');
+		if(checkFile.isFile()){
+			let trimFile = file.replace('.js', '');
+			
+			if(type === 'routes'){
+				if(trimFile === 'index'){
+					trimFile = '';
+				}
+				app.use(`/${trimFile}`, require(currentLoop));
+			}else if(type === 'logic'){
+				params[trimFile] = require(currentLoop);
 			}
+		}else if(checkFile.isDirectory()){
+			requireFile(currentLoop);
 		}
-
-	});
+	}
 };
 
 console.time('Initialize Core');
@@ -99,16 +101,15 @@ console.time('Initialize Core');
 
 	console.time('Initialize Logic');
 		let logicPath = './logic';
-		requireFile(logicPath);
+		requireFile(logicPath, 'logic');
 	console.timeEnd('Initialize Logic');
 
 	console.time('Initialize Routes');
 		let routesPath = './routes';
-		requireFile(routesPath);
+		requireFile(routesPath, 'routes');
 	console.timeEnd('Initialize Routes');
 console.timeEnd('Initialize Core');
 
-console.log(params);
 app.use((err, req, res, next) => {
 	res.status(500).send({error: 'something blew up!'}).end();
 });
