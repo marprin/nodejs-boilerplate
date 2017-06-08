@@ -7,6 +7,7 @@ console.time('Initialize Library');
 	const cors = require('cors');
 	const ejs = require('ejs');
 	const express = require('express');
+	const expressSession = require('express-session');
 	const fs = require('fs');
 	const helmet = require('helmet');
 	const limiter = require('limiter');
@@ -64,11 +65,10 @@ console.time('Initialize Database');
 	
 console.timeEnd('Initialize Database');
 
-// let params = {
-// 	app, async, fs, moment, path, redisClient, request	
-// };
+let params = {
+	app, async, fs, moment, path, redisClient, request, router
+};
 
-let params = {};
 let requireFile = (path, type) => {
 
 	let directoryFiles = fs.readdirSync(path);
@@ -77,18 +77,15 @@ let requireFile = (path, type) => {
 		let checkFile = fs.lstatSync(currentLoop);
 
 		if(checkFile.isFile()){
-			let trimFile = file.replace('.js', '');
-			
 			if(type === 'routes'){
-				if(trimFile === 'index'){
-					trimFile = '';
-				}
-				app.use(`/${trimFile}`, require(currentLoop));
+				let routePath = currentLoop.replace('.js', '').replace('./routes/', '').replace('index', '');
+				app.use(`/${routePath}`, require(currentLoop));
 			}else if(type === 'logic'){
+				let trimFile = file.replace('.js', '');
 				params[trimFile] = require(currentLoop);
 			}
 		}else if(checkFile.isDirectory()){
-			requireFile(currentLoop);
+			requireFile(currentLoop, type);
 		}
 	}
 };

@@ -1,5 +1,14 @@
 'use strict';
 
+// module.exports = (params) => {
+//     const app = params.router;
+//     const middleware = params.middleware;
+//     app.get('', (req, res, next) => {
+//         console.log('tes');
+//         res.send('in home');
+//     });
+// }
+
 const express = require('express');
 const router = express.Router();
 
