@@ -3,6 +3,7 @@
 console.time('Initialize Library');
 	const async = require('async');
 	const bodyParser = require('body-parser');
+	const crypto = require('crypto-js');
 	const cookieParser = require('cookie-parser');
 	const cors = require('cors');
 	const ejs = require('ejs');
@@ -17,7 +18,10 @@ console.time('Initialize Library');
 	const path = require('path');
 	const pgsql = require('pg');
 	const redis = require('redis');
+	const redisSession = require('connect-redis')(expressSession);
 	const request = require('request');
+	const underscore = require('underscore');
+	const userAgent = require('express-useragent');
 
 	const app = express();
 	const router = express.Router();
@@ -34,11 +38,13 @@ console.time('Initialize App');
 	app.use(logger('short'));
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded( { extended:true } ));
-	app.use(cookieParser(env.APP_KEY));
+	app.use(cookieParser(env.COOKIE_SECRET));
 	app.use(express.static(path.join(__dirname, 'public')));
+	app.use(expressSession({ store: new redisSession({ host: env.REDIS_HOST, port: env.REDIS_PORT }), secret: env.SESSION_SECRET, saveUninitialized: true, resave: true }))
 	app.use(cors());
 	app.use(methodOverride());
 	app.use(helmet());
+	app.use(userAgent.express());
 
 	app.disable('x-powered-by');
 console.timeEnd('Initialize App');
@@ -66,7 +72,7 @@ console.time('Initialize Database');
 console.timeEnd('Initialize Database');
 
 let params = {
-	app, async, fs, moment, path, redisClient, request, router
+	app, async, crypto, fs, env, moment, path, redisClient, request, router, underscore
 };
 
 let requireFile = (path, type) => {
@@ -82,7 +88,7 @@ let requireFile = (path, type) => {
 				app.use(`/${routePath}`, require(currentLoop));
 			}else if(type === 'logic'){
 				let trimFile = file.replace('.js', '');
-				params[trimFile] = require(currentLoop);
+				params[trimFile] = require(currentLoop)(params);
 			}
 		}else if(checkFile.isDirectory()){
 			requireFile(currentLoop, type);
@@ -108,6 +114,7 @@ console.time('Initialize Core');
 console.timeEnd('Initialize Core');
 
 app.use((err, req, res, next) => {
+	console.log(err);
 	res.status(500).send({error: 'something blew up!'}).end();
 });
 

@@ -4,33 +4,38 @@
   "description": "This app will create an app like split.io but the simple one",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
-  "repository": [
-    {
-      "type": "git",
-      "url": ""
-    }
-  ],
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:marprin/node-framework.git"
+  },
   "author": "Marprin Hennes Muchri(marprin93@gmail.com)",
   "license": "MIT",
   "dependencies": {
     "async": "^2.4.1",
     "body-parser": "^1.17.2",
+    "connect-redis": "^3.3.0",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.3",
+    "crypto-js": "^3.1.9-1",
     "dotenv": "^4.0.0",
     "ejs": "^2.5.6",
     "express": "^4.15.3",
+    "express-session": "^1.15.3",
+    "express-useragent": "^1.0.7",
     "fs": "0.0.1-security",
     "helmet": "^3.6.1",
     "limiter": "^1.1.0",
     "method-override": "^2.3.9",
+    "mocha": "^3.4.2",
     "moment": "^2.18.1",
     "morgan": "^1.8.2",
     "path": "^0.12.7",
     "pg": "^6.2.3",
     "redis": "^2.7.1",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "underscore": "^1.8.3"
   }
 }
