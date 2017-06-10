@@ -76,21 +76,26 @@ let params = {
 };
 
 let requireFile = (path, type) => {
-
 	let directoryFiles = fs.readdirSync(path);
-	for(let file of directoryFiles){
+	for(let file of directoryFiles) {
 		let currentLoop = `${path}/${file}`;
 		let checkFile = fs.lstatSync(currentLoop);
 
-		if(checkFile.isFile()){
-			if(type === 'routes'){
-				let routePath = currentLoop.replace('.js', '').replace('./routes/', '').replace('index', '');
-				app.use(`/${routePath}`, require(currentLoop));
-			}else if(type === 'logic'){
-				let trimFile = file.replace('.js', '');
-				params[trimFile] = require(currentLoop)(params);
+		if (checkFile.isFile()) {
+			let trimPath = currentLoop.replace('.js', '').replace(type, '').split('/');
+			let loopPath = 1;
+			for (let ePath of trimPath) {
+				// last path then just require the file
+				if (trimPath.length === loopPath) {
+					params[ePath] = require(currentLoop)(params);
+				} else {
+					// Create the object structure if not exist else just create it
+					if (!params[ePath]) {
+						params[ePath] = {};
+					}
+				}
 			}
-		}else if(checkFile.isDirectory()){
+		} else if (checkFile.isDirectory()) {
 			requireFile(currentLoop, type);
 		}
 	}
@@ -98,20 +103,31 @@ let requireFile = (path, type) => {
 
 console.time('Initialize Core');
 	console.time('Initialize Middleware');
-		let middleware = require('./middleware')();
+		let middleware = require('./middleware/middleware.js')(params);
 		params.middleware = middleware;
 	console.timeEnd('Initialize Middleware');
 
+	console.time('Initialize Model');
+		let modelPath = './model';
+
+	console.timeEnd('Initialize Model');
+
 	console.time('Initialize Logic');
 		let logicPath = './logic';
-		requireFile(logicPath, 'logic');
+		requireFile(logicPath, './logic/');
 	console.timeEnd('Initialize Logic');
 
+	console.time('Initialize Controller');
+		let controllerPath = './controller';
+		requireFile(controllerPath, './controller/');
+	console.timeEnd('Initialize Controller');
+
 	console.time('Initialize Routes');
-		let routesPath = './routes';
-		requireFile(routesPath, 'routes');
+		let routesPath = './routes/route.js';
+		require(routesPath)(params);
 	console.timeEnd('Initialize Routes');
 console.timeEnd('Initialize Core');
+console.log(params);
 
 app.use((err, req, res, next) => {
 	console.log(err);
