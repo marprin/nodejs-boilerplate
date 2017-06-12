@@ -3,19 +3,8 @@
 module.exports = (params) => {
     const app = params.app;
     const middleware = params.middleware;
+    const controller = params.controller;
 
-    app.get('', (req, res, next) => {
-        console.log('tes');
-        res.send('in home');
-    });
+    app.get('', controller.WelcomeController.index);
+    app.get('/login', controller.LoginController.index);
 }
-
-// const express = require('express');
-// const router = express.Router();
-
-// router.get('', (req, res) => {
-//     console.log('tes');
-//     res.send('succes');
-// })
-
-// module.exports = router;

@@ -87,7 +87,14 @@ let requireFile = (path, type) => {
 			for (let ePath of trimPath) {
 				// last path then just require the file
 				if (trimPath.length === loopPath) {
-					params[ePath] = require(currentLoop)(params);
+					if(type === './controller/'){
+						if(!params.hasOwnProperty('controller')){
+							params['controller'] = {};
+						}
+						params['controller'][ePath] = require(currentLoop)(params);
+					}else{
+						params[ePath] = require(currentLoop)(params);
+					}
 				} else {
 					// Create the object structure if not exist else just create it
 					if (!params[ePath]) {
