@@ -1,8 +1,12 @@
+'use strict';
+
 module.exports = (params) => {
     return {
         index: (req, res, next) => {
-            console.log('in index welcome controller');
-            res.send('success');
+            let context = {
+                pageTitle: 'Welcome'
+            };
+            return res.render('welcome.html', context);
         }
     }
 }

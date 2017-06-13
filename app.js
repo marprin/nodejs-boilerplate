@@ -39,7 +39,7 @@ console.time('Initialize App');
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded( { extended:true } ));
 	app.use(cookieParser(env.COOKIE_SECRET));
-	app.use(express.static(path.join(__dirname, 'public')));
+	app.use('/public', express.static(path.join(__dirname, 'public')));
 	app.use(expressSession({ store: new redisSession({ host: env.REDIS_HOST, port: env.REDIS_PORT }), secret: env.SESSION_SECRET, saveUninitialized: true, resave: true }))
 	app.use(cors());
 	app.use(methodOverride());

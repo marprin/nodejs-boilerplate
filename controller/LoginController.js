@@ -1,7 +1,12 @@
+'use strict';
+
 module.exports = (params) => {
     return {
         index: (req, res, next) => {
-            return res.render('login.html');
+            let context = {
+                pageTitle: 'Login'
+            };
+            return res.render('login.html', context);
         }
     }
 }
