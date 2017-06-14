@@ -15,11 +15,13 @@ console.time('Initialize Library');
 	const logger = require('morgan');
 	const methodOverride = require('method-override');
 	const moment = require('moment');
+	const mysql = require('mysql2');
 	const path = require('path');
 	const pgsql = require('pg');
 	const redis = require('redis');
 	const redisSession = require('connect-redis')(expressSession);
 	const request = require('request');
+	const sequelize	= require('sequelize');
 	const underscore = require('underscore');
 	const userAgent = require('express-useragent');
 
@@ -50,7 +52,7 @@ console.time('Initialize App');
 console.timeEnd('Initialize App');
 
 console.time('Initialize Redis');
-	const redisOptions = {
+	let redisOptions = {
 		'host': env.REDIS_HOST,
 		'port': env.REDIS_PORT,
 		'prefix': env.REDIS_PREFIX
@@ -60,7 +62,7 @@ console.time('Initialize Redis');
 		redisOptions.password = env.REDIS_PASSWORD;
 	}
 
-	const redisClient = redis.createClient(redisOptions);
+	let redisClient = redis.createClient(redisOptions);
 
 	redisClient.on('error', (err) => {
 		console.error('ERROR ON CONNECTING TO REDIS');
@@ -68,11 +70,40 @@ console.time('Initialize Redis');
 console.timeEnd('Initialize Redis');
 
 console.time('Initialize Database');
-	
+	let sequelizeConnection = {
+		host: env.DB_HOST || '127.0.0.1',
+		port: env.DB_PORT || 3307,
+		database: env.DB_NAME,
+		username: env.DB_USERNAME,
+		password: env.DB_PASSWORD,
+		dialect: env.DB_ADAPTER || 'mysql',
+		pool: {
+			max: 5,
+			min: 0,
+			idle: 10000
+		}
+	};
+	let sequelizeClient = new sequelize(sequelizeConnection);
+
+	sequelizeClient.authenticate().then( () => {
+		console.log('Connection to database has been established successfully.');
+	}).catch( (err) => {
+		console.error(`ERROR WHEN CONNECTING TO DATABASE: ${err}`);
+	});
+
+	let databaseConnection = {
+		host: env.DB_HOST || '127.0.0.1',
+		port: env.DB_PORT || 3307,
+		database: env.DB_NAME,
+		user: env.DB_USERNAME,
+		password: env.DB_PASSWORD,
+	};
+
+	let db = mysql.createConnection(databaseConnection);
 console.timeEnd('Initialize Database');
 
 let params = {
-	app, async, crypto, fs, env, moment, path, redisClient, request, router, underscore
+	app, async, crypto, fs, env, moment, path, redisClient, request, router, sequelizeClient, underscore
 };
 
 let requireFile = (path, type) => {
@@ -134,7 +165,6 @@ console.time('Initialize Core');
 		require(routesPath)(params);
 	console.timeEnd('Initialize Routes');
 console.timeEnd('Initialize Core');
-console.log(params);
 
 app.use((err, req, res, next) => {
 	console.log(err);
