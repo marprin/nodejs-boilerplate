@@ -22,7 +22,7 @@ console.time('Initialize Library');
 	const redisSession = require('connect-redis')(expressSession);
 	const request = require('request');
 	const sequelize	= require('sequelize');
-	const underscore = require('underscore');
+	const _ = require('underscore');
 	const userAgent = require('express-useragent');
 
 	const app = express();
@@ -103,8 +103,25 @@ console.time('Initialize Database');
 console.timeEnd('Initialize Database');
 
 let params = {
-	app, async, crypto, fs, env, moment, path, redisClient, request, router, sequelizeClient, underscore
+	_, app, async, crypto, fs, env, moment, path, redisClient, request, router, sequelizeClient
 };
+
+let recursiveObjectCreation = (keys, type) => {
+	for (let ePath of trimPath) {
+		// last path then just require the file
+		if (trimPath.length === loopPath) {
+			if(!params.hasOwnProperty('controller')){
+				params['controller'] = {};
+			}
+			params[type][ePath] = require(currentLoop)(params);
+		} else {
+			// Create the object structure if not exist else just create it
+			if (!params[ePath]) {
+				params[ePath] = {};
+			}
+		}
+	}
+}
 
 let requireFile = (path, type) => {
 	let directoryFiles = fs.readdirSync(path);
