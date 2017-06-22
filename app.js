@@ -21,7 +21,7 @@ console.time('Initialize Library');
 	const redis = require('redis');
 	const redisSession = require('connect-redis')(expressSession);
 	const request = require('request');
-	const sequelize	= require('sequelize');
+	const Sequelize	= require('sequelize');
 	const _ = require('underscore');
 	const userAgent = require('express-useragent');
 
@@ -72,7 +72,7 @@ console.timeEnd('Initialize Redis');
 console.time('Initialize Database');
 	let sequelizeConnection = {
 		host: env.DB_HOST || '127.0.0.1',
-		port: env.DB_PORT || 3307,
+		port: env.DB_PORT || 3306,
 		database: env.DB_NAME,
 		username: env.DB_USERNAME,
 		password: env.DB_PASSWORD,
@@ -83,7 +83,7 @@ console.time('Initialize Database');
 			idle: 10000
 		}
 	};
-	let sequelizeClient = new sequelize(sequelizeConnection);
+	let sequelizeClient = new Sequelize(sequelizeConnection);
 
 	sequelizeClient.authenticate().then( () => {
 		console.log('Connection to database has been established successfully.');
@@ -93,7 +93,7 @@ console.time('Initialize Database');
 
 	let databaseConnection = {
 		host: env.DB_HOST || '127.0.0.1',
-		port: env.DB_PORT || 3307,
+		port: env.DB_PORT || 3306,
 		database: env.DB_NAME,
 		user: env.DB_USERNAME,
 		password: env.DB_PASSWORD,
@@ -103,15 +103,16 @@ console.time('Initialize Database');
 console.timeEnd('Initialize Database');
 
 let params = {
-	_, app, async, crypto, fs, env, moment, path, redisClient, request, router, sequelizeClient
+	_, app, async, crypto, fs, env, moment, path, redisClient, request, router, Sequelize, sequelizeClient
 };
 
 let recursiveObjectCreation = (keys, type) => {
 	for (let ePath of trimPath) {
 		// last path then just require the file
 		if (trimPath.length === loopPath) {
-			if(!params.hasOwnProperty('controller')){
-				params['controller'] = {};
+			let trimType = type.replace('./', '').replace('/', '');
+			if(!params.hasOwnProperty(trimType)){
+				params[trimType] = {};
 			}
 			params[type][ePath] = require(currentLoop)(params);
 		} else {
@@ -140,6 +141,11 @@ let requireFile = (path, type) => {
 							params['controller'] = {};
 						}
 						params['controller'][ePath] = require(currentLoop)(params);
+					}else if (type === './model/') {
+						if(!params.hasOwnProperty('model')) {
+							params['model'] = {};
+						}
+						params['model'][ePath] = require(currentLoop)(params);
 					}else{
 						params[ePath] = require(currentLoop)(params);
 					}
@@ -164,7 +170,7 @@ console.time('Initialize Core');
 
 	console.time('Initialize Model');
 		let modelPath = './model';
-
+		requireFile(modelPath, './model/');
 	console.timeEnd('Initialize Model');
 
 	console.time('Initialize Logic');
