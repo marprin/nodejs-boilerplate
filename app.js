@@ -24,6 +24,7 @@ console.time('Initialize Library');
 	const Sequelize	= require('sequelize');
 	const _ = require('underscore');
 	const userAgent = require('express-useragent');
+	const uuidv4 = require('uuid/v4');
 
 	const app = express();
 	const router = express.Router();
@@ -103,7 +104,7 @@ console.time('Initialize Database');
 console.timeEnd('Initialize Database');
 
 let params = {
-	_, app, async, crypto, fs, env, moment, path, redisClient, request, router, Sequelize, sequelizeClient
+	_, app, async, crypto, fs, env, moment, path, redisClient, request, router, Sequelize, sequelizeClient, uuidv4
 };
 
 let recursiveObjectCreation = (keys, type) => {
