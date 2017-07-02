@@ -21,9 +21,10 @@ console.time('Initialize Library');
 	const redis = require('redis');
 	const redisSession = require('connect-redis')(expressSession);
 	const request = require('request');
-	const sequelize	= require('sequelize');
+	const Sequelize	= require('sequelize');
 	const _ = require('underscore');
 	const userAgent = require('express-useragent');
+	const uuidv4 = require('uuid/v4');
 
 	const app = express();
 	const router = express.Router();
@@ -72,7 +73,7 @@ console.timeEnd('Initialize Redis');
 console.time('Initialize Database');
 	let sequelizeConnection = {
 		host: env.DB_HOST || '127.0.0.1',
-		port: env.DB_PORT || 3307,
+		port: env.DB_PORT || 3306,
 		database: env.DB_NAME,
 		username: env.DB_USERNAME,
 		password: env.DB_PASSWORD,
@@ -83,7 +84,7 @@ console.time('Initialize Database');
 			idle: 10000
 		}
 	};
-	let sequelizeClient = new sequelize(sequelizeConnection);
+	let sequelizeClient = new Sequelize(sequelizeConnection);
 
 	sequelizeClient.authenticate().then( () => {
 		console.log('Connection to database has been established successfully.');
@@ -93,7 +94,7 @@ console.time('Initialize Database');
 
 	let databaseConnection = {
 		host: env.DB_HOST || '127.0.0.1',
-		port: env.DB_PORT || 3307,
+		port: env.DB_PORT || 3306,
 		database: env.DB_NAME,
 		user: env.DB_USERNAME,
 		password: env.DB_PASSWORD,
@@ -103,25 +104,23 @@ console.time('Initialize Database');
 console.timeEnd('Initialize Database');
 
 let params = {
-	_, app, async, crypto, fs, env, moment, path, redisClient, request, router, sequelizeClient
+	_, app, async, crypto, fs, env, moment, path, redisClient, request, router, Sequelize, sequelizeClient, uuidv4
 };
 
-let recursiveObjectCreation = (keys, type, fileLocation, index) => {
-	keysLength = keys.length;
-	key = keys[index];
-	if(keysLength === index) {
-		let data = {};
-		data[key] = require(fileLocation)(params);
-		return data;
-	}else {
-		if(index === 1) {
-			if(!params.hasOwnProperty(type)) {
-				params[type] = {};
+let recursiveObjectCreation = (keys, type) => {
+	for (let ePath of trimPath) {
+		// last path then just require the file
+		if (trimPath.length === loopPath) {
+			let trimType = type.replace('./', '').replace('/', '');
+			if(!params.hasOwnProperty(trimType)){
+				params[trimType] = {};
 			}
-			//_.extend(params[type], )
-		} else { 
-			let data = {};
-			data[key] = recursiveObjectCreation(keys, type, fileLocation, (keysLength - 1));
+			params[type][ePath] = require(currentLoop)(params);
+		} else {
+			// Create the object structure if not exist else just create it
+			if (!params[ePath]) {
+				params[ePath] = {};
+			}
 		}
 	}
 }
@@ -146,6 +145,11 @@ let requireFile = (path, type) => {
 							params['controller'] = {};
 						}
 						params['controller'][ePath] = require(currentLoop)(params);
+					}else if (type === './model/') {
+						if(!params.hasOwnProperty('model')) {
+							params['model'] = {};
+						}
+						params['model'][ePath] = require(currentLoop)(params);
 					}else{
 						params[ePath] = require(currentLoop)(params);
 					}
@@ -170,7 +174,7 @@ console.time('Initialize Core');
 
 	console.time('Initialize Model');
 		let modelPath = './model';
-
+		requireFile(modelPath, './model/');
 	console.timeEnd('Initialize Model');
 
 	console.time('Initialize Logic');
