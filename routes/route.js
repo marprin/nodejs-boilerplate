@@ -6,5 +6,5 @@ module.exports = (params) => {
     const controller = params.controller;
 
     app.get('', controller.WelcomeController.index);
-    app.get('/login/status', controller.LoginController.index);
+    app.get('/login', controller.LoginController.index);
 }

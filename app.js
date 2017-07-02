@@ -106,19 +106,22 @@ let params = {
 	_, app, async, crypto, fs, env, moment, path, redisClient, request, router, sequelizeClient
 };
 
-let recursiveObjectCreation = (keys, type) => {
-	for (let ePath of trimPath) {
-		// last path then just require the file
-		if (trimPath.length === loopPath) {
-			if(!params.hasOwnProperty('controller')){
-				params['controller'] = {};
+let recursiveObjectCreation = (keys, type, fileLocation, index) => {
+	keysLength = keys.length;
+	key = keys[index];
+	if(keysLength === index) {
+		let data = {};
+		data[key] = require(fileLocation)(params);
+		return data;
+	}else {
+		if(index === 1) {
+			if(!params.hasOwnProperty(type)) {
+				params[type] = {};
 			}
-			params[type][ePath] = require(currentLoop)(params);
-		} else {
-			// Create the object structure if not exist else just create it
-			if (!params[ePath]) {
-				params[ePath] = {};
-			}
+			//_.extend(params[type], )
+		} else { 
+			let data = {};
+			data[key] = recursiveObjectCreation(keys, type, fileLocation, (keysLength - 1));
 		}
 	}
 }
@@ -131,6 +134,9 @@ let requireFile = (path, type) => {
 
 		if (checkFile.isFile()) {
 			let trimPath = currentLoop.replace('.js', '').replace(type, '').split('/');
+			let trimType = type.replace('./', '').replace('/', '');
+			//recursiveObjectCreation(trimPath, trimType, currentLoop, trimPath.length);
+			
 			let loopPath = 1;
 			for (let ePath of trimPath) {
 				// last path then just require the file

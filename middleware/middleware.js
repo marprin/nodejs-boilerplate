@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = (params) => {
 	return {
 		loginUser: (req, res, next) => {
