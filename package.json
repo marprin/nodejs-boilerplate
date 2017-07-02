@@ -1,17 +1,17 @@
 {
-  "name": "feature-flag",
+  "name": "node-framework",
   "version": "1.0.0",
   "description": "This will be the framework to start with NodeJS project.",
   "main": "app.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec",
+    "test": "mocha --reporter spec",
     "start": "node app.js"
   },
   "repository": {
     "type": "git",
     "url": "git@bitbucket.org:marprin/node-framework.git"
   },
-  "author": "Marprin Hennes Muchri(marprin93@gmail.com)",
+  "author": "Marprin Hennes Muchri (marprin93@gmail.com)",
   "license": "MIT",
   "dependencies": {
     "async": "^2.4.1",
@@ -46,5 +46,6 @@
     "mocha": "^3.4.2",
     "should": "^11.2.1",
     "supertest": "^3.0.0"
-  }
+  },
+  "homepage": "https://bitbucket.org/marprin/node-framework#readme"
 }
