@@ -104,7 +104,7 @@ console.time('Initialize Database');
 console.timeEnd('Initialize Database');
 
 let params = {
-	_, app, async, crypto, fs, env, moment, path, redisClient, request, router, Sequelize, sequelizeClient, uuidv4
+	_, app, async, crypto, db, fs, env, moment, path, redisClient, request, router, Sequelize, sequelizeClient, userAgent, uuidv4
 };
 
 let recursiveObjectCreation = (keys, type) => {
@@ -209,23 +209,13 @@ app.use((req, res, next) => {
 	next(err);
 });
 
-// Development error handler will print stacktrace
-if(env.APP_ENV === 'development'){
-	app.use((err, req, res, next) => {
-		res.status(err.status || 500);
-		res.render('error', {
-			message: err.message,
-			error:err
-		});
-	});
-}
-
-// Production error handler, won't print stacktrace
+// Error handler, won't print stacktrace on production environment
 app.use((err, req, res, next) => {
+	let error = (env.APP_ENV === 'production') ? {} : err;
 	res.status(err.status || 500);
 	res.render('error', {
 		message: err.message,
-		error: {}
+		error: error
 	});
 });
 
