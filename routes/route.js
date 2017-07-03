@@ -2,9 +2,9 @@
 
 module.exports = (params) => {
     const app = params.app;
-    const middleware = params.middleware;
-    const controller = params.controller;
+    const Middleware = params.Middleware;
+    const Controller = params.Controller;
 
-    app.get('', controller.WelcomeController.index);
-    app.get('/login', controller.LoginController.index);
+    app.get('', Controller.WelcomeController.index);
+    app.get('/login', Controller.LoginController.index);
 }

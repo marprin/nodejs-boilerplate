@@ -107,22 +107,21 @@ let params = {
 	_, app, async, crypto, db, fs, env, moment, path, redisClient, request, router, Sequelize, sequelizeClient, userAgent, uuidv4
 };
 
-let recursiveObjectCreation = (keys, type) => {
-	for (let ePath of trimPath) {
-		// last path then just require the file
-		if (trimPath.length === loopPath) {
-			let trimType = type.replace('./', '').replace('/', '');
-			if(!params.hasOwnProperty(trimType)){
-				params[trimType] = {};
-			}
-			params[type][ePath] = require(currentLoop)(params);
-		} else {
-			// Create the object structure if not exist else just create it
-			if (!params[ePath]) {
-				params[ePath] = {};
-			}
-		}
+let objectCreation = (keys, type, fullPath) => {
+	let keysLength = keys.length;
+	let tempObject = {};
+	tempObject[keys[keysLength - 1]] = require(fullPath)(params);
+
+	for(let i = (keysLength - 2); i >= 0; i--) {
+		let newObject = {};
+		newObject[keys[i]] = tempObject;
+		tempObject = newObject;
 	}
+
+	if(!params.hasOwnProperty(type)) {
+		params[type] = {};
+	}
+	_.extend(params[type], tempObject);
 }
 
 let requireFile = (path, type) => {
@@ -134,32 +133,7 @@ let requireFile = (path, type) => {
 		if (checkFile.isFile()) {
 			let trimPath = currentLoop.replace('.js', '').replace(type, '').split('/');
 			let trimType = type.replace('./', '').replace('/', '');
-			//recursiveObjectCreation(trimPath, trimType, currentLoop, trimPath.length);
-			
-			let loopPath = 1;
-			for (let ePath of trimPath) {
-				// last path then just require the file
-				if (trimPath.length === loopPath) {
-					if(type === './controller/'){
-						if(!params.hasOwnProperty('controller')){
-							params['controller'] = {};
-						}
-						params['controller'][ePath] = require(currentLoop)(params);
-					}else if (type === './model/') {
-						if(!params.hasOwnProperty('model')) {
-							params['model'] = {};
-						}
-						params['model'][ePath] = require(currentLoop)(params);
-					}else{
-						params[ePath] = require(currentLoop)(params);
-					}
-				} else {
-					// Create the object structure if not exist else just create it
-					if (!params[ePath]) {
-						params[ePath] = {};
-					}
-				}
-			}
+			objectCreation(trimPath, trimType, currentLoop);
 		} else if (checkFile.isDirectory()) {
 			requireFile(currentLoop, type);
 		}
@@ -168,23 +142,23 @@ let requireFile = (path, type) => {
 
 console.time('Initialize Core');
 	console.time('Initialize Middleware');
-		let middleware = require('./middleware/middleware.js')(params);
-		params.middleware = middleware;
+		let middleware = require('./Middleware/middleware.js')(params);
+		params.Middleware = middleware;
 	console.timeEnd('Initialize Middleware');
 
 	console.time('Initialize Model');
-		let modelPath = './model';
-		requireFile(modelPath, './model/');
+		let modelPath = './Model';
+		requireFile(modelPath, './Model/');
 	console.timeEnd('Initialize Model');
 
 	console.time('Initialize Logic');
-		let logicPath = './logic';
-		requireFile(logicPath, './logic/');
+		let logicPath = './Logic';
+		requireFile(logicPath, './Logic/');
 	console.timeEnd('Initialize Logic');
 
 	console.time('Initialize Controller');
-		let controllerPath = './controller';
-		requireFile(controllerPath, './controller/');
+		let controllerPath = './Controller';
+		requireFile(controllerPath, './Controller/');
 	console.timeEnd('Initialize Controller');
 
 	console.time('Initialize Routes');
