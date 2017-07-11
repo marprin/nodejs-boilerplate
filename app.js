@@ -104,7 +104,7 @@ console.time('Initialize Database');
 console.timeEnd('Initialize Database');
 
 let params = {
-	_, app, async, crypto, db, fs, env, moment, path, redisClient, request, router, Sequelize, sequelizeClient, userAgent, uuidv4
+	_, app, async, crypto, db, env, fs, moment, path, redisClient, request, router, Sequelize, sequelizeClient, userAgent, uuidv4
 };
 
 let objectCreation = (keys, type, fullPath) => {
@@ -141,6 +141,11 @@ let requireFile = (path, type) => {
 };
 
 console.time('Initialize Core');
+	console.time('Initialize Helper');
+		let helper = require('./helper/helper.js')(params);
+		params.helper = helper;
+	console.timeEnd('Initialize Helper');
+
 	console.time('Initialize Middleware');
 		let middleware = require('./Middleware/middleware.js')(params);
 		params.Middleware = middleware;
@@ -180,6 +185,7 @@ app.get('/status', (req, res, next) => {
 app.use((req, res, next) => {
 	let err = new Error('Not found');
 	err.status = 404;
+	err.title = 'Not Found';
 	next(err);
 });
 
@@ -189,7 +195,8 @@ app.use((err, req, res, next) => {
 	res.status(err.status || 500);
 	res.render('error', {
 		message: err.message,
-		error: error
+		error: error,
+		title: err.title || 'Error'
 	});
 });
 
