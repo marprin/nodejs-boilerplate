@@ -140,7 +140,31 @@ let requireFile = (path, type) => {
 	}
 };
 
+let requireOneChildFolder = (path, type) => {
+	let directoryFiles = fs.readdirSync(path);
+	let requiredFile = {};
+	requiredFile[type] = {};
+
+	if(!params.hasOwnProperty(type)) {
+		params[type] = {};
+	}
+
+	for(let file of directoryFiles) {
+		let currentLoop = `${path}/${file}`;
+		let checkFile = fs.lstatSync(currentLoop);
+
+		let trimPath = currentLoop.replace('.json', '').replace(path + '/', '');
+		requiredFile[type][trimPath] = require(currentLoop)[env.APP_ENV];
+	}
+	_.extend(params[type],requiredFile[type]);
+}
+
 console.time('Initialize Core');
+	console.time('Initialize Config');
+		let configPath = './config';
+		requireOneChildFolder(configPath, 'CONFIG');
+	console.timeEnd('Initialize Config');
+
 	console.time('Initialize Helper');
 		let helper = require('./helper/helper.js')(params);
 		params.helper = helper;
