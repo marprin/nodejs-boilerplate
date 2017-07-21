@@ -1,7 +1,9 @@
 'use strict';
 
-module.exports = ({app, Controller, Middleware, Model} = params) => {
-    app.get('', Controller.WelcomeController.index);
-    app.get('/login', Controller.LoginController.index);
+module.exports = ({app, CONFIG, Controller, Middleware, Model} = params) => {
+    let routes = CONFIG.routes;
+
+    app.get(routes.home, Controller.WelcomeController.index);
+    app.get(routes.login, Controller.LoginController.index);
     app.get('/test', Controller.WelcomeController.test);
 }

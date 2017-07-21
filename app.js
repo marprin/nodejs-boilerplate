@@ -145,16 +145,21 @@ let requireOneChildFolder = (path, type) => {
 	let requiredFile = {};
 	requiredFile[type] = {};
 
+	let fileExcept = ['routes'];
+
 	if(!params.hasOwnProperty(type)) {
 		params[type] = {};
 	}
 
 	for(let file of directoryFiles) {
 		let currentLoop = `${path}/${file}`;
-		let checkFile = fs.lstatSync(currentLoop);
 
 		let trimPath = currentLoop.replace('.json', '').replace(path + '/', '');
-		requiredFile[type][trimPath] = require(currentLoop)[env.APP_ENV];
+		if(fileExcept.indexOf(trimPath ) >= 0) {
+			requiredFile[type][trimPath] = require(currentLoop);
+		} else {
+			requiredFile[type][trimPath] = require(currentLoop)[env.APP_ENV];
+		}
 	}
 	_.extend(params[type],requiredFile[type]);
 }
