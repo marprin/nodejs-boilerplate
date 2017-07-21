@@ -153,8 +153,8 @@ let requireOneChildFolder = (path, type) => {
 
 	for(let file of directoryFiles) {
 		let currentLoop = `${path}/${file}`;
-
 		let trimPath = currentLoop.replace('.json', '').replace(path + '/', '');
+
 		if(fileExcept.indexOf(trimPath ) >= 0) {
 			requiredFile[type][trimPath] = require(currentLoop);
 		} else {
