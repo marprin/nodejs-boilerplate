@@ -229,7 +229,7 @@ app.use((err, req, res, next) => {
 	});
 });
 
-const APP_PORT = env.APP_PORT || 8200;
+const APP_PORT = env.APP_PORT || 8432;
 
 app.listen(APP_PORT, () => {
 	console.log(`Server running on port: ${APP_PORT}`);

@@ -1,4 +1,7 @@
 {
     "home": "",
-    "login": "/login"
+    "login": "/login",
+    "admin": {
+        "dashboard": "/admin/dashboard"
+    }
 }
