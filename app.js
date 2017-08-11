@@ -185,6 +185,14 @@ console.time('Initialize Core');
 		requireFile(modelPath, './Model/');
 	console.timeEnd('Initialize Model');
 
+	console.time('Make Model Relations');
+		Object.keys(params.Model).forEach(modelName => {
+			if ('associate' in params.Model[modelName]) {
+				params.Model[modelName].associate(params.Model);
+			}
+		});
+	console.timeEnd('Make Model Relations');
+
 	console.time('Initialize Logic');
 		let logicPath = './Logic';
 		requireFile(logicPath, './Logic/');
