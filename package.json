@@ -47,6 +47,7 @@
     "mocha": "^3.4.2",
     "nodemon": "^1.11.0",
     "should": "^11.2.1",
+    "sinon": "^3.2.0",
     "supertest": "^3.0.0"
   },
   "homepage": "https://bitbucket.org/marprin/node-framework#readme"
