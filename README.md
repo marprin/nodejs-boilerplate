@@ -20,7 +20,7 @@ This is a base structure for Node JS application
 
     `node app` or `npm start` or `nodemon`
     
-    This will start the application on `127.0.0.1:8219` or please check your .env file
+    This will start the application on `127.0.0.1:8200` or please check your .env file
     
     The `Nodemon` will automatically restart the server, so you don't need to restart the server manually.
 
