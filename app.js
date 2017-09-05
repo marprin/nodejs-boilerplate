@@ -21,6 +21,7 @@ console.time('Initialize Library');
 	const redis = require('redis');
 	const redisSession = require('connect-redis')(expressSession);
 	const request = require('request');
+	const requestPromise = require('request-promise');
 	const Sequelize	= require('sequelize');
 	const _ = require('underscore');
 	const userAgent = require('express-useragent');
@@ -104,7 +105,7 @@ console.time('Initialize Database');
 console.timeEnd('Initialize Database');
 
 let params = {
-	_, app, async, crypto, db, env, fs, moment, path, redisClient, request, router, Sequelize, sequelizeClient, userAgent, uuidv4
+	_, app, async, crypto, db, env, fs, moment, path, redisClient, request, requestPromise, router, Sequelize, sequelizeClient, userAgent, uuidv4
 };
 
 let objectCreation = (keys, type, fullPath) => {
@@ -175,11 +176,6 @@ console.time('Initialize Core');
 		params.helper = helper;
 	console.timeEnd('Initialize Helper');
 
-	console.time('Initialize Middleware');
-		let middleware = require('./Middleware/middleware.js')(params);
-		params.Middleware = middleware;
-	console.timeEnd('Initialize Middleware');
-
 	console.time('Initialize Model');
 		let modelPath = './Model';
 		requireFile(modelPath, './Model/');
@@ -192,6 +188,11 @@ console.time('Initialize Core');
 			}
 		});
 	console.timeEnd('Make Model Relations');
+
+	console.time('Initialize Middleware');
+		let middleware = require('./Middleware/middleware.js')(params);
+		params.Middleware = middleware;
+	console.timeEnd('Initialize Middleware');
 
 	console.time('Initialize Logic');
 		let logicPath = './Logic';
