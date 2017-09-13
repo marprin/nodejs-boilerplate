@@ -169,11 +169,13 @@ console.time('Initialize Core');
 	console.time('Initialize Config');
 		let configPath = './config';
 		requireOneChildFolder(configPath, 'CONFIG');
+		app.locals.config = params.CONFIG;
 	console.timeEnd('Initialize Config');
 
 	console.time('Initialize Helper');
 		let helper = require('./helper/helper.js')(params);
 		params.helper = helper;
+		app.locals.helpers = helper;
 	console.timeEnd('Initialize Helper');
 
 	console.time('Initialize Model');
