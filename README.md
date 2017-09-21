@@ -12,22 +12,22 @@ This is a base structure for Node JS application
 * Clone this repository
 * To install the package on package.json just run
 
-    `npm install` 
-    
+    `npm install`
+
 * Copy `.env.example` to `.env` and then set the key based on need
 
 * To run the application for development purposes
 
     `node app` or `npm start` or `nodemon`
-    
-    This will start the application on `127.0.0.1:8200` or please check your .env file
-    
+
+    This will start the application on `127.0.0.1:8432` or please check your .env file
+
     The `Nodemon` will automatically restart the server, so you don't need to restart the server manually.
 
 ### Run Test
 Running a test is easy.
 1. Set your .env variable of `DB_NAME` same as `DB_TESTING_NAME`
-    
+
     because the server will get the data from `DB_NAME` while the test case will insert to `DB_TESTING_NAME`
     and will cause your test case FAILED
 

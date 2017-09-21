@@ -7,6 +7,6 @@ ADD . /src/app
 WORKDIR /src/app
 RUN npm install --production
 
-EXPOSE 8219
+EXPOSE 8432
 
 CMD ["pm2-docker", "start", "pm2.json"]
