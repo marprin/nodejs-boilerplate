@@ -9,9 +9,10 @@ console.time('Initialize Library');
 	const ejs = require('ejs');
 	const express = require('express');
 	const expressSession = require('express-session');
+	const flash = require('connect-flash');
 	const fs = require('fs');
 	const helmet = require('helmet');
-	const limiter = require('limiter');
+	const rateLimiter = require('limiter').RateLimiter;
 	const logger = require('morgan');
 	const methodOverride = require('method-override');
 	const moment = require('moment');
@@ -28,6 +29,7 @@ console.time('Initialize Library');
 	const uuidv4 = require('uuid/v4');
 
 	const app = express();
+	const limiter = new rateLimiter(50, 'minute');
 	const router = express.Router();
 	require('dotenv').load();
 console.timeEnd('Initialize Library');
@@ -45,12 +47,15 @@ console.time('Initialize App');
 	app.use(cookieParser(env.COOKIE_SECRET));
 	app.use('/public', express.static(path.join(__dirname, 'public')));
 	app.use(expressSession({ store: new redisSession({ host: env.REDIS_HOST, port: env.REDIS_PORT }), secret: env.SESSION_SECRET, saveUninitialized: true, resave: true }))
+	app.use(flash());
 	app.use(cors());
 	app.use(methodOverride());
 	app.use(helmet());
 	app.use(userAgent.express());
 
 	app.disable('x-powered-by');
+	app.locals.lang = 'en';
+	app.locals.currentYear = new Date().getFullYear();
 console.timeEnd('Initialize App');
 
 console.time('Initialize Redis');
@@ -105,13 +110,28 @@ console.time('Initialize Database');
 console.timeEnd('Initialize Database');
 
 let params = {
-	_, app, async, crypto, db, env, fs, moment, path, redisClient, request, requestPromise, router, Sequelize, sequelizeClient, userAgent, uuidv4
+	_, app, async, crypto, db, env, fs, limiter, moment, path, redisClient, request, requestPromise, router, Sequelize, sequelizeClient, userAgent, uuidv4
 };
 
-let objectCreation = (keys, type, fullPath) => {
+let extendsObject = (target, source) => {
+	let key = Object.getOwnPropertyNames(source);
+
+	if(!target[key]) {
+		target[key] = source[key];
+	} else {
+		extendsObject(target[key], source[key]);
+	}
+}
+
+// Require Files
+let objectCreation = (keys, type, fullPath, ext) => {
 	let keysLength = keys.length;
 	let tempObject = {};
-	tempObject[keys[keysLength - 1]] = require(fullPath)(params);
+	if(ext == '.json') {
+		tempObject[keys[keysLength - 1]] = require(fullPath);
+	} else {
+		tempObject[keys[keysLength - 1]] = require(fullPath)(params);
+	}
 
 	for(let i = (keysLength - 2); i >= 0; i--) {
 		let newObject = {};
@@ -122,21 +142,21 @@ let objectCreation = (keys, type, fullPath) => {
 	if(!params.hasOwnProperty(type)) {
 		params[type] = {};
 	}
-	_.extend(params[type], tempObject);
+	extendsObject(params[type], tempObject);
 }
 
-let requireFile = (path, type) => {
+let requireFile = (path, type, ext = '.js') => {
 	let directoryFiles = fs.readdirSync(path);
 	for(let file of directoryFiles) {
 		let currentLoop = `${path}/${file}`;
 		let checkFile = fs.lstatSync(currentLoop);
 
 		if (checkFile.isFile()) {
-			let trimPath = currentLoop.replace('.js', '').replace(type, '').split('/');
+			let trimPath = currentLoop.replace(ext, '').replace(type, '').split('/');
 			let trimType = type.replace('./', '').replace('/', '');
-			objectCreation(trimPath, trimType, currentLoop);
+			objectCreation(trimPath, trimType, currentLoop, ext);
 		} else if (checkFile.isDirectory()) {
-			requireFile(currentLoop, type);
+			requireFile(currentLoop, type, ext);
 		}
 	}
 };
@@ -166,9 +186,15 @@ let requireOneChildFolder = (path, type) => {
 }
 
 console.time('Initialize Core');
+	console.time('Initialize Rules');
+		let rulesPath = './Rules';
+		requireFile(rulesPath, './Rules/', '.json');
+	console.timeEnd('Initialize Rules');
+
 	console.time('Initialize Config');
 		let configPath = './config';
 		requireOneChildFolder(configPath, 'CONFIG');
+		//set the app.local for able access in view
 		app.locals.config = params.CONFIG;
 	console.timeEnd('Initialize Config');
 
@@ -194,12 +220,19 @@ console.time('Initialize Core');
 	console.time('Initialize Middleware');
 		let middleware = require('./Middleware/middleware.js')(params);
 		params.Middleware = middleware;
+		app.use(middleware.setLanguage);
+		app.use(middleware.requestLimiter);
+		app.use(middleware.flashMessage);
 	console.timeEnd('Initialize Middleware');
 
 	console.time('Initialize Logic');
 		let logicPath = './Logic';
 		requireFile(logicPath, './Logic/');
 	console.timeEnd('Initialize Logic');
+
+	console.time('Initialize Validator');
+		params.Validator = require('./Validator/Validator.js');
+	console.timeEnd('Initialize Validator');
 
 	console.time('Initialize Controller');
 		let controllerPath = './Controller';

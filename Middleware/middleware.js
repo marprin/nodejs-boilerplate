@@ -1,10 +1,31 @@
 'use strict';
 
-module.exports = (params) => {
+module.exports = ({ app, async, CONFIG, env, limiter, Model } = params) => {
 	return {
-		loginUser: (req, res, next) => {
-			console.log('tes from middleware');
-			next();
-		}
+		setLanguage: (req, res, next) => {
+	      let language = req.query.lang || req.signedCookies['lang'] || false;
+
+	      // validate language
+
+	      if(language) {
+	          app.locals.lang = language;
+	          res.cookie('lang', language, { maxAge: 86400000, signed: true })
+	      }
+
+	      return next();
+	  },
+		requestLimiter: (req, res, next) => {
+	      limiter.removeTokens(1, (err, remainingRequest) => {
+	          if(err) {
+	              return res.end('Too many request');
+	          } else {
+	              return next();
+	          }
+	      });
+	  },
+	  flashMessage: (req, res, next) => {
+	      app.locals.flash = req.flash();
+	      next();
+	  }
 	}
 }
