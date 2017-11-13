@@ -109,8 +109,10 @@ console.time('Initialize Database');
 	let db = mysql.createConnection(databaseConnection);
 console.timeEnd('Initialize Database');
 
+let adminTemplate = 'admin/template.html';
+
 let params = {
-	_, app, async, crypto, db, env, fs, limiter, moment, path, redisClient, request, requestPromise, router, Sequelize, sequelizeClient, userAgent, uuidv4
+	_, adminTemplate, app, async, crypto, db, env, fs, limiter, moment, path, redisClient, request, requestPromise, router, Sequelize, sequelizeClient, userAgent, uuidv4
 };
 
 let extendsObject = (target, source) => {

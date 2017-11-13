@@ -4,9 +4,10 @@ module.exports = (params) => {
     return {
         index: (req, res, next) => {
             let context = {
-                pageTitle: 'Login'
+                pageTitle: 'Login',
+                view: 'login.html'
             };
-            return res.render('login.html', context);
+            return res.render('template.html', context);
         }
     }
 }

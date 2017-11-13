@@ -4,9 +4,10 @@ module.exports = ({_, async, crypto, env, fs, helper, Logic, Model, moment, path
     return {
         index: (req, res, next) => {
             let context = {
-                pageTitle: 'Welcome'
+                pageTitle: 'Welcome',
+                view: 'welcome.html'
             };
-            return res.render('welcome.html', context);
+            return res.render('template.html', context);
         },
         test: (req, res, next) => {
             return helper.notFoundResponse(res);

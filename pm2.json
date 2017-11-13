@@ -10,5 +10,17 @@
         "exec_mode": "cluster",
         "watch": true
       }
-    ]
+    ],
+    "deploy": {
+      "production": {
+        "user": "deploy",
+        "host": [],
+        "ref": "origin/master",
+        "repo": "",
+        "path": "",
+        "pre-deploy-local": "echo 'Start deploy zuper'",
+        "post-setup": "",
+        "post-deploy": "npm install && pm2 startOrReload pm2.json"
+      }
+    }
 }
