@@ -12,18 +12,19 @@ console.time('Initialize Library');
 	const flash = require('connect-flash');
 	const fs = require('fs');
 	const helmet = require('helmet');
-	const rateLimiter = require('limiter').RateLimiter;
 	const logger = require('morgan');
 	const methodOverride = require('method-override');
 	const moment = require('moment');
 	const mysql = require('mysql2');
 	const path = require('path');
 	const pgsql = require('pg');
+	const rateLimiter = require('limiter').RateLimiter;
 	const redis = require('redis');
 	const redisSession = require('connect-redis')(expressSession);
 	const request = require('request');
 	const requestPromise = require('request-promise');
 	const Sequelize	= require('sequelize');
+	const SequelizeOp = Sequelize.Op;
 	const _ = require('underscore');
 	const userAgent = require('express-useragent');
 	const uuidv4 = require('uuid/v4');
@@ -84,6 +85,7 @@ console.time('Initialize Database');
 		username: env.DB_USERNAME,
 		password: env.DB_PASSWORD,
 		dialect: env.DB_ADAPTER || 'mysql',
+		operatorsAliases: SequelizeOp,
 		pool: {
 			max: 5,
 			min: 0,
@@ -112,7 +114,7 @@ console.timeEnd('Initialize Database');
 let adminTemplate = 'admin/template.html';
 
 let params = {
-	_, adminTemplate, app, async, crypto, db, env, fs, limiter, moment, path, redisClient, request, requestPromise, router, Sequelize, sequelizeClient, userAgent, uuidv4
+	_, adminTemplate, app, async, crypto, db, env, fs, limiter, moment, path, redisClient, request, requestPromise, router, Sequelize, SequelizeOp, sequelizeClient, userAgent, uuidv4
 };
 
 let extendsObject = (target, source) => {
