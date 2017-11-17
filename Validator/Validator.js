@@ -29,6 +29,17 @@ class Validator {
             }
         }
 
+        if(this.isFails){
+            let structuredErrors = {};
+            for(let error of this.errors) {
+                let key = Object.getOwnPropertyNames(error)[0];
+                if(!structuredErrors.hasOwnProperty(key)) {
+                    structuredErrors[key] = error[key];
+                }
+            }
+            this.req.flash('validationErrors', structuredErrors);
+        }
+
         return {
             isFails: this.isFails,
             errors: this.errors
