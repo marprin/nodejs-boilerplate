@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = ({_, adminTemplate, async, crypto, env, fs, helper, Logic, Model, moment, path, redisClient, request, userAgent, uuidv4} = params) => {
+module.exports = ({_, adminTemplate, Async, Crypto, env, fs, helper, Logic, Model, Moment, path, RedisClient, Request, userAgent, uuidv4} = params) => {
     return {
         index: (req, res, next) => {
             let context = {
