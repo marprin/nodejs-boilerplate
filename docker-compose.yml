@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    # volumes:
+    #   - db_data:/var/lib/mysql
+    restart: always
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: "test"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: ""
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+    - "6400:6379"
+  sites:
+    depends_on:
+      - db
+      - redis
+    build: .
+    ports:
+      - "8400:8432"
+    volumes:
+      - .:/src/app
+    restart: always
+  # volumes:
+  #   db_data: ""
