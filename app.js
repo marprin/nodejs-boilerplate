@@ -47,6 +47,7 @@ console.time('Initialize App');
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded( { extended:true } ));
     app.use(cookieParser(env.COOKIE_SECRET));
+    app.use('/', express.static(path.join(__dirname, 'public')));
     app.use('/public', express.static(path.join(__dirname, 'public')));
     app.use(expressSession({ store: new redisSession({ host: env.REDIS_HOST, port: env.REDIS_PORT }), secret: env.SESSION_SECRET, saveUninitialized: true, resave: true }))
     app.use(flash());
@@ -56,6 +57,7 @@ console.time('Initialize App');
     app.use(userAgent.express());
 
     app.disable('x-powered-by');
+
     app.locals.lang = 'en';
     app.locals.currentYear = new Date().getFullYear();
 console.timeEnd('Initialize App');
@@ -166,6 +168,7 @@ let requireFile = (path, type, ext = '.js') => {
     }
 };
 
+// Require JSON Files in CONFIG Folder
 let requireOneChildFolder = (path, type) => {
     let directoryFiles = fs.readdirSync(path);
     let requiredFile = {};
@@ -226,6 +229,7 @@ console.time('Initialize Core');
         let middleware = require('./Middleware/middleware.js')(params);
         params.Middleware = middleware;
         app.use(middleware.setLanguage);
+        app.use(middleware.isBlacklistedIps);
         app.use(middleware.requestLimiter);
         app.use(middleware.flashMessage);
     console.timeEnd('Initialize Middleware');
