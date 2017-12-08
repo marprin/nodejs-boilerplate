@@ -18,7 +18,6 @@ console.time('Initialize Library');
     const Moment = require('moment');
     const mysql = require('mysql2');
     const path = require('path');
-    const pgsql = require('pg');
     const RateLimiter = require('limiter').RateLimiter;
     const redis = require('redis');
     const redisSession = require('connect-redis')(expressSession);
