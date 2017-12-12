@@ -23,7 +23,7 @@ class Validator {
             } else {
                 // put the error directly because the field is not present but show the corrent validation
                 let error = {};
-                error[rule] = `The ${rule} must be present`;
+                error[key] = `The ${key} must be present`;
                 this.errors.push(error);
                 this.isFails = true;
             }
