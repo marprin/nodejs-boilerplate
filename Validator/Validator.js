@@ -515,6 +515,16 @@ class Validator {
         }
     }
 
+    slugify(key) {
+        let pattern = /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/;
+        if (!pattern.test(this.data[key])) {
+            let error = {};
+            error[key] = `The ${key} must be a valid slug`;
+            this.errors.push(error);
+            this.isFails = true;
+        }
+    }
+
     unique(key, options) {
 
     }
