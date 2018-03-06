@@ -1,15 +1,23 @@
 {
-  "name": "node-framework",
+  "name": "node-boilerplate",
   "version": "1.0.0",
-  "description": "This will be the framework to start with NodeJS project.",
+  "description": "This will be the boilerplate to start with NodeJS project.",
   "main": "app.js",
   "scripts": {
     "test": "mocha --reporter spec",
-    "start": "node app.js"
+    "start": "nodemon",
+    "dev": "npm run development",
+    "development": "NODE_ENV=development && npm install && npm install -g nodemon && nodemon",
+    "dev-yarn": "npm run development-yarn",
+    "development-yarn": "NODE_ENV=development && yarn install && yarn add nodemon && nodemon",
+    "prod": "npm run production",
+    "production": "NODE_ENV=production && npm install --production && npm install -g pm2 && pm2 startOrReload pm2.json",
+    "prod-yarn": "npm run production-yarn",
+    "production-yarn": "NODE_ENV=production && yarn install --production && yarn add pm2 && pm2 startOrReload pm2.json"
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:marprin/node-framework.git"
+    "url": "git+ssh://git@github.com:marprin/nodejs-boilerplate.git"
   },
   "author": "Marprin Hennes Muchri (marprin93@gmail.com)",
   "license": "MIT",
@@ -35,6 +43,7 @@
     "morgan": "^1.8.2",
     "mysql2": "^1.5.2",
     "path": "^0.12.7",
+    "pm2": "^2.10.1",
     "redis": "^2.7.1",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
@@ -51,8 +60,12 @@
     "sinon": "^3.2.0",
     "supertest": "^3.0.0"
   },
-  "homepage": "https://bitbucket.org/marprin/node-framework#readme",
+  "homepage": "https://github.com/marprin/nodejs-boilerplate#readme",
   "directories": {
     "test": "test"
-  }
+  },
+  "keywords": [
+    "nodejs",
+    "boilerplate"
+  ]
 }

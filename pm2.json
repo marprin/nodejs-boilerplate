@@ -16,11 +16,11 @@
         "user": "deploy",
         "host": [],
         "ref": "origin/master",
-        "repo": "",
-        "path": "",
+        "repo": "git@github.com:marprin/nodejs-boilerplate.git",
+        "path": "/src/app",
         "pre-deploy-local": "echo 'Start deploy zuper'",
         "post-setup": "",
-        "post-deploy": "npm install && pm2 startOrReload pm2.json"
+        "post-deploy": "npm install --production && pm2 startOrReload pm2.json"
       }
     }
 }
