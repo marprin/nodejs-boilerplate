@@ -212,17 +212,8 @@ console.time('Initialize Core');
     console.timeEnd('Initialize Helper');
 
     console.time('Initialize Model');
-        let modelPath = './Model';
-        requireFile(modelPath, './Model/');
+        params.Model = require('./models');
     console.timeEnd('Initialize Model');
-
-    console.time('Make Model Relations');
-        Object.keys(params.Model).forEach(modelName => {
-            if ('associate' in params.Model[modelName]) {
-                params.Model[modelName].associate(params.Model);
-            }
-        });
-    console.timeEnd('Make Model Relations');
 
     console.time('Initialize Middleware');
         let middleware = require('./Middleware/middleware.js')(params);

@@ -16,8 +16,7 @@ module.exports = ({ app, Async, CONFIG, env, Limiter, Model, SequelizeOp } = par
         },
         isBlacklistedIps: (req, res, next) => {
             let ip_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-            Model.BlackListedIp.findOne({
+            Model.black_listed_ips.findOne({
                 where: {
                     ip_address: {
                         [SequelizeOp.eq]: ip_address
